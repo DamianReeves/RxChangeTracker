@@ -44,10 +44,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChangeSet.cs" />
     <Compile Include="ChangeTracker.cs" />
+    <Compile Include="ChangeTrackerTable.cs" />
+    <Compile Include="TrackedReference.cs" />
     <Compile Include="ChangeTrackingInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\WeakReference.cs" />
+    <Compile Include="Property.cs" />
+    <Compile Include="PropertyObservation.cs" />
+    <Compile Include="SnapshotProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

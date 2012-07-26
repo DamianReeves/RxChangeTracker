@@ -10,14 +10,11 @@ using System.Text;
 
 namespace RxChangeTracker {
     public class ChangeTracker: IChangeTracking, IEnumerable<object> {
-        readonly ISubject<IChangeTrackingInfo> _tracked = new ReplaySubject<IChangeTrackingInfo>();
-        private readonly ConditionalWeakTable<object,IChangeTrackingInfo> _targetMap = new ConditionalWeakTable<object, IChangeTrackingInfo>();
-        public ChangeTracker() {
-            this.Initialize();
-        }        
-        public bool IsChanged { get; set; }
+        private readonly ChangeTrackerTable _tracked = new ChangeTrackerTable();
+        //private readonly ConditionalWeakTable<object,IChangeTrackingInfo> _targetMap = new ConditionalWeakTable<object, IChangeTrackingInfo>();
+        public ChangeTracker() {}        
 
-        public IObservable<object> Tracked { get; private set; }
+        public bool IsChanged { get; set; }
 
         public void Add(object target) {
             //dynamic dynamicTarget = target;
@@ -30,27 +27,15 @@ namespace RxChangeTracker {
         }
 
         public void Track(object target) {
-            var ctTarget = this.CreateChangeTrackingTarget(target);
-            _tracked.OnNext(ctTarget);
+            _tracked.Add(target);
         }
 
-        protected virtual IChangeTrackingInfo CreateChangeTrackingTarget(object target) {
-            return ChangeTrackingInfo.Create(target);
-        }
-
-        private void Initialize() {
-            //_targetMap.
-            IObservable<IChangeTrackingInfo> trackedTargets = _tracked;
-            IObservable<object> tracked = 
-                from trackingTarget in trackedTargets
-                where trackingTarget.IsAlive
-                select trackingTarget.GetTarget();
-            tracked = tracked.Where(x => x != null).Distinct();
-            Tracked = tracked;
+        public IEnumerable<object> GetTracked() {
+            return _tracked;
         }
 
         public IEnumerator<object> GetEnumerator() {
-            return _tracked.ToEnumerable().GetEnumerator();
+            return _tracked.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
